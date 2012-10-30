@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Writing Automatic Selenium Tests Using Perl</title>
+
+		<meta name="author" content="Pavel Zhytomirsky">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+<link rel="stylesheet" type="text/css" href="file:/usr/local/share/perl/5.14.2/TAP/Formatter/HTML/default_page.css" /><link rel="stylesheet" type="text/css" href="file:/usr/local/share/perl/5.14.2/TAP/Formatter/HTML/default_report.css" />
+<script type="text/javascript" src="file:/usr/local/share/perl/5.14.2/TAP/Formatter/HTML/jquery-1.4.2.min.js"></script><script type="text/javascript" src="file:/usr/local/share/perl/5.14.2/TAP/Formatter/HTML/jquery.tablesorter-2.0.3.min.js"></script><script type="text/javascript" src="file:/usr/local/share/perl/5.14.2/TAP/Formatter/HTML/default_report.js"></script>
+<style type="text/css">
+/******************************************************************************
+ * TAP-Formatter-HTML: default stylesheet for report page layout
+ * Separated from default_report.css by request so users only need to override
+ * and maintain one css file.
+ * Copyright (c) 2008-2010 Steve Purkis.  All rights reserved.
+ * Released under the same terms as Perl itself.
+ *****************************************************************************/
+
+html {
+width: 100%;
+height: 100%;
+}
+
+body {
+font-family: Helvetica, Verdana, Arial, Tahoma;
+font-size: small;
+background-color: #efefef;
+}
+
+
+
+/******************************************************************************
+ * TAP-Formatter-HTML: default stylesheet for report body
+ * Copyright (c) 2008-2010 Steve Purkis.  All rights reserved.
+ * Released under the same terms as Perl itself.
+ *****************************************************************************/
+
+/******************************************************************************
+/* The menu bar
+ */
+#menu {
+display: none; /* hidden by default */
+position: absolute;
+left: 8px;
+top: 8px;
+padding: 2px;
+font-size: small;
+background-color: #eeffcc;
+opacity: 0.5;
+}
+
+#menu ul {
+        margin: 0px;
+        padding: 5px;
+}
+
+#menu li {
+text-decoration: none;
+list-style: none;
+display: block;
+}
+
+
+/******************************************************************************
+/* The summary bar
+ */
+#summary {
+position: relative;
+padding: 2px 0 2 0;
+width: 100%;
+font-size: x-large;
+text-align: center;
+}
+
+#summary.passed {
+background-color: #99ff66;
+border: 1px solid #00ff00;
+}
+
+#summary.failed {
+background-color: #ff6450;
+border: 1px solid #ff0000;
+}
+
+#summary a {
+width: 100%;
+display: block;
+margin: 0;
+padding: 0;
+text-decoration: none;
+color: #000000;
+}
+
+#summary a:hover {
+text-decoration: none;
+color: #6666aa;
+}
+
+
+/******************************************************************************
+ * The report detail section
+ */
+#detail {
+margin-top: 5px;
+width: 100%;
+}
+
+table.detail {
+width: 100%;
+border: 1px solid #3333ee;
+padding: 2px;
+border-spacing: 0px;
+}
+
+table.detail th {
+border-bottom: 2px solid #3333ee;
+padding-top: 2px;
+}
+
+table.detail tfoot tr td {
+border-top: 2px solid #3333ee;
+padding-top: 2px;
+}
+
+table.detail td {
+position: relative;
+top: 0px;
+left: 0px;
+border-top: 1px solid #aaaaaa;
+margin: 0;
+padding: 2px 0 2 0;
+vertical-align: top;
+}
+
+table.detail td.file {
+font-size: small;
+}
+
+/*
+table.detail tr.failed td.file {
+background-color: #FF6450;
+}
+*/
+
+/******************************************************************************
+ * Test detail: sortable column headers (requires jquery.tablesort plugin)
+ */
+th.header { 
+}
+
+th.header:after {
+    font-size: 0.6em;
+    content: " ^v";
+}
+
+th.headerSortUp { 
+    background-color: #ffffcc;
+}
+
+th.headerSortUp:after {
+    font-size: 0.6em;
+    content: " /\\";
+}
+
+th.headerSortDown { 
+    background-color: #ffffcc;
+}
+
+th.headerSortDown:after { 
+    font-size: 0.6em;
+    content: " \\/";
+}
+
+/******************************************************************************
+ * The file column
+ */
+table.detail td.file {
+width: 10%;
+padding-left: 2px;
+padding-right: 4px;
+}
+
+a.file {
+display: block;
+margin: 0;
+padding: 0;
+width: 100%;
+height: 100%;
+text-decoration: none;
+color: #3333cc;
+}
+
+a.file:hover {
+text-decoration: none;
+color: #6666ee;
+}
+
+a.file:visited {
+text-decoration: none;
+color: #3333cc;
+}
+
+div.back-up {
+    position: relative;
+    text-align: center;
+    border: 1px solid grey;
+    width: 100%;
+}
+
+/******************************************************************************
+ * The time column
+ */
+table.detail td.time {
+width: 2%;
+border-left: 1px solid #ddddff;
+text-align: center;
+font-size: small;
+}
+
+/******************************************************************************
+ * The percentage column
+ */
+table.detail td.percent {
+padding-left: 2px;
+padding-right: 2px;
+width: 2%;
+text-align: center;
+font-size: small;
+vertical-align: middle;
+}
+
+/******************************************************************************
+ * Colouring the file + percentage columns
+ */
+table.detail tr.percent td.c {
+padding-left: 2px;
+padding-right: 2px;
+width: 2%;
+text-align: center;
+font-size: small;
+vertical-align: middle;
+}
+
+table.detail tr.passed td.c {
+border: 1px solid #99cc99;
+}
+
+table.detail tr.passed td.cb {
+background-color: #99ff66;
+}
+
+table.detail tr.todo-passed td.c {
+border: 1px solid #99cc99;
+}
+
+table.detail tr.todo-passed td.cb {
+background-color: #ddffbb;
+}
+
+table.detail tr.severity-very-low td.c {
+border: 1px solid #ffee33;
+background-color: #ffffaa;
+}
+
+table.detail tr.severity-low td.c {
+border: 1px solid #eecc33;
+background-color: #ffdd99;
+}
+
+table.detail tr.severity-med td.c {
+border: 1px solid #dd6633;
+background-color: #ffaa77;
+}
+
+table.detail tr.severity-high td.c {
+border: 1px solid #ff3333;
+background-color: #ff8866;
+}
+
+table.detail tr.severity-very-high td.c {
+border: 1px solid #ff0000;
+background-color: #ff6450;
+}
+
+/******************************************************************************
+ * The test run column
+ */
+
+/******************************************************************************
+ * Test summaries (.TS)
+ */
+
+table.TS {
+clear: both;
+width: 100%;
+height: 10px;
+font-size: 8px; /* safari wants this less than 10px */
+margin: 0px;
+margin-bottom: 4px;
+padding: 0;
+border-spacing: 1px;
+}
+
+table.TS td {
+margin: 0;
+padding: 0;
+height: 10px;
+}
+
+table.TS td a {
+display: block;
+margin: 0;
+padding: 0;
+text-decoration: none;
+width: 100%;
+height: 100%;
+}
+
+/* base for passed/failed (should always be lower precedent in class list!) */
+table.TS td.p { /* p=passed */
+border: 1px solid #66cc33;
+background-color: #99ff66;
+}
+
+table.TS td.f { /* f=failed */
+border: 1px solid #ff0000;
+background-color: #ff6450;
+}
+
+/* overrides for specific outcomes */
+table.TS td.k { /* k=ok */
+border: 1px solid #66cc33;
+}
+
+table.TS td.n { /* n=not-ok */
+border: 1px solid #ff0000;
+}
+
+table.TS td.u { /* u=todo-ok = 'unexpected' ok */
+border: 1px solid #eeaa00;
+background-color: #ffcc00;
+}
+
+table.TS td.t { /* t=todo-not-ok */
+border: 1px solid #99cc99;
+background-color: #ddffbb;
+}
+
+table.TS td.s { /* s=skip-ok */
+border: 1px solid #99d999;
+background-color: #99cc66;
+}
+
+/******************************************************************************
+ * Test detail
+ */
+div.test-detail {
+margin: 0;
+padding: 0;
+/*	display: none; /* let JS handle this... */
+}
+
+/******************************************************************************
+ * Test parse errors
+ */
+ul.parse-errors {
+margin: 0;
+padding: 0;
+clear: left;
+}
+
+ul.parse-errors li {
+margin-left: 4px;
+list-style: none;
+color: red;
+}
+
+/******************************************************************************
+ * Test output
+ */
+ul.test-out {
+margin: 0;
+padding: 0;
+clear: left;
+}
+
+ul.test-out li {
+margin-left: 4;
+border-left: none;
+list-style: none;
+}
+
+ul.test-out li.k { /* k=ok */
+;
+}
+
+ul.test-out li.n { /* n=not-ok */
+color: #ff0000;
+}
+
+ul.test-out li.u { /* u=todo-ok = 'unexpected' ok */
+color: #cc3333;
+}
+
+ul.test-out li.t { /* t=todo-not-ok */
+color: #773322;
+}
+
+ul.test-out li.s { /* s=skip-ok */
+color: #001111;
+}
+
+ul.test-out li.tst {
+;
+}
+
+ul.test-out li.cmt {
+color: #666666;
+font-family: monospace;
+}
+
+ul.test-out li.pln {
+color: blue;
+}
+
+ul.test-out li.unp { /* unp=unplanned */
+color: #ff0000;
+}
+
+ul.test-out li.unk { /* unk=unknown */
+color: #996600;
+font-family: monospace;
+}
+
+ul.test-out li.stat { /* stat=exit-status */
+color: #ff0000;
+}
+
+ul.test-out li.yml { /* yml=yaml */
+white-space: pre;
+}
+
+
+
+</style>
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+					<h1>Selenium + Perl</h1>
+                    <ul>
+                        <li>What is Selenium?</li>
+                        <li>Simple test with Selenium IDE</li>
+                        <li>Selenium RC, WebDriver</li>
+                        <li>Selenium Perl Modules</li>
+                        <li>Writing TAP tests with selenium modules</li>
+                        <li>Advanced writing selenium tests</li>
+                    </ul>
+				</section>
+
+				<section>
+					<h2>What is Selenium?</h2>
+					<p>
+                    Selenium is a portable software testing framework for web applications. Selenium provides a record/playback tool for authoring tests without learning a test scripting language (Selenium IDE). It also provides a test domain-specific language (Selenese) to write tests in a number of popular programming languages, including C#, Java, Groovy, Perl, PHP, Python and Ruby. The tests can then be run against most modern web browsers. Selenium deploys on Windows, Linux, and Macintosh platforms.
+                    </p>
+				</section>
+                <section>
+                    <section>
+                        <h3>Selenium RC</h2>
+                        <div>
+                            Selenium RC: <a href="http://seleniumhq.org/download/" >http://seleniumhq.org/download/</a>
+                        </div>
+                        <pre><div class="bash fragment">
+java -jar selenium-server-standalone-2.25.0.jar
+                        </div></pre>
+                        <pre><code class="log fragment">Oct 27, 2012 6:22:14 PM org.openqa.grid.selenium.GridLauncher main
+INFO: Launching a standalone server
+18:22:15.929 INFO - Java: Sun Microsystems Inc. 20.0-b12
+18:22:15.948 INFO - OS: Linux 3.2.0-30-generic amd64
+18:22:16.011 INFO - v2.25.0, with Core v2.25.0. Built from revision 17482
+18:22:16.301 INFO - RemoteWebDriver instances should connect to: http://127.0.0.1:4444/wd/hub
+18:22:16.302 INFO - Version Jetty/5.1.x
+18:22:16.309 INFO - Started HttpContext[/selenium-server/driver,/selenium-server/driver]
+18:22:16.309 INFO - Started HttpContext[/selenium-server,/selenium-server]
+18:22:16.310 INFO - Started HttpContext[/,/]
+18:22:16.429 INFO - Started org.openqa.jetty.jetty.servlet.ServletHandler@35549f94
+18:22:16.429 INFO - Started HttpContext[/wd,/wd]
+18:22:16.434 INFO - Started SocketListener on 0.0.0.0:4444
+18:22:16.434 INFO - Started org.openqa.jetty.jetty.Server@5abb7465</pre></code>
+                    </section>
+                    <section>
+                        <h2>WWW::Selenium - CPAN Module</h2>
+                        <pre><code class="perl fragment">use WWW::Selenium;
+
+my $sel = WWW::Selenium->new(
+    host => "localhost",
+    port => 4444,
+    browser => "*chrome",
+    browser_url => "http://www.google.com",
+);
+
+$sel->start;
+$sel->open("http://www.google.com");
+$sel->type("q", "hello world");
+$sel->click("btnG");
+$sel->wait_for_page_to_load(5000);
+print $sel->get_title;
+$sel->stop;</code></pre>
+                    </section>
+                    <section>
+                    <h3>Selenium RC console log</h3>
+                    <pre><code class="fragment">18:34:23.594 INFO - Command request: getNewBrowserSession[*firefox, http://www.google.com] on session null
+18:34:23.595 INFO - creating new remote session
+18:34:23.753 WARN - Caution: '/usr/bin/firefox': file is a script file, not a real executable.  The browser environment is no longer fully under RC control
+18:34:23.756 INFO - Allocated session dbc4b1c7827844518db8f363bf6160df for http://www.google.com, launching...
+jar:file:/home/r3volut1oner/Documents/Development/selenium-tutorial/share/selenium-server-standalone-2.25.0.jar!/customProfileDirCUSTFFCHROME
+18:34:24.019 INFO - Preparing Firefox profile...
+18:34:28.386 INFO - Launching Firefox...
+18:34:32.647 INFO - Got result: OK,dbc4b1c7827844518db8f363bf6160df on session dbc4b1c7827844518db8f363bf6160df
+18:34:32.651 INFO - Command request: open[http://www.google.com, ] on session dbc4b1c7827844518db8f363bf6160df
+18:34:34.598 INFO - Got result: OK on session dbc4b1c7827844518db8f363bf6160df
+18:34:34.601 INFO - Command request: type[q, hello world] on session dbc4b1c7827844518db8f363bf6160df
+18:34:34.622 INFO - Got result: OK on session dbc4b1c7827844518db8f363bf6160df
+18:34:34.624 INFO - Command request: click[btnG, ] on session dbc4b1c7827844518db8f363bf6160df
+18:34:34.657 INFO - Got result: OK on session dbc4b1c7827844518db8f363bf6160df
+18:34:34.661 INFO - Command request: waitForPageToLoad[5000, ] on session dbc4b1c7827844518db8f363bf6160df
+18:34:39.820 INFO - Got result: Timed out after 5000ms on session dbc4b1c7827844518db8f363bf6160df
+18:34:39.828 INFO - Command request: testComplete[, ] on session dbc4b1c7827844518db8f363bf6160df
+18:34:39.828 INFO - Killing Firefox...
+18:34:40.005 INFO - Got result: OK on session dbc4b1c7827844518db8f363bf6160df
+                    </code></pre>
+                    </section>
+                    <section>
+                        <h3>Selenium IDE</h2>
+                        <pre><code class="perl fragment">use strict;
+use warnings;
+use Time::HiRes qw(sleep);
+use Test::WWW::Selenium;
+use Test::More "no_plan";
+use Test::Exception;
+
+my $sel = Test::WWW::Selenium->new(
+    host => "localhost",
+    port => 4444,
+    browser => "*firefox",
+    browser_url => "http://www.google.co.il/" );
+
+$sel->open_ok("/");
+$sel->type_ok("id=gbqfq", "Selenium");
+WAIT: {
+    for (1..60) {
+        if (eval { "Selenium - Web Browser Automation" eq $sel->get_text("link=Selenium - Web Browser Automation") }) { pass; last WAIT }
+        sleep(1);
+    }
+    fail("timeout");
+}
+$sel->click_ok("link=Selenium - Web Browser Automation");
+$sel->wait_for_page_to_load_ok("30000");
+$sel->title_is("Selenium - Web Browser Automation");
+$sel->is_element_present_ok("id=submit");</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>TAP - Test Anything Protocol</h2>
+                        <pre class="fragment">1..N ( N - Number of tests )</pre>
+                        <pre class="fragment">ok 1 - Test <font color=green>pass</font></pre>
+                        <pre class="fragment">not ok 2 - Test <font color=red>fail</font></pre>
+                        <pre class="fragment"># It is some comments/information text</pre>
+                        <div class="fragment">
+                        <h3>Some code:</h3>
+<pre><code class="perl">use Test::Simple tests => 1; # Output: 1..2
+
+ok( 1, 'First test' )        # Output: ok 1 - First test
+ok( 0, 'Second test' )       # Output: not ok 1 - First test
+</code></pre>
+                        </div>
+                        <h3 class="fragment">CPAN Modules:</h3>
+                        <div class="fragment">
+Test::Simple Test::More Test::Harness TAP::Harness Test::Run
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Selenium RC CPAN Modules</h2>
+                        <h4 class="fragment">WWW::Selenium - Base Selenium module</h3>
+                        <h4 class="fragment">Selenium::Remote::Driver - Base Selenium 2.0 module</h3>
+                        <h4 class="fragment">Test::WWW::Selenium - Basic test module</h3>
+                        <h4 class="fragment">Test::WWW::Selenium::More - Advanced test module</h3>
+                        <pre class="fragment"><code class="perl">use Moose;</code></pre>
+                        <pre class="fragment"><code class="perl">fill_form_ok()
+submit_form_ok()
+wait_for_jquery_ok()
+download_file_ok()
+change_speed()</code></pre>
+                    </section>
+                    <section>
+                        <h2>Code example</h2>
+                        <pre class="fragment"><code class="perl">use Test::WWW::Selenium::More;
+
+Test::WWW::Selenium::More->new()
+
+    # Add some note with data
+    ->note('this is a test.  this is only a test.')
+
+    # Test open a website
+    ->open_ok("/")
+
+    # Check is text present
+    ->is_text_present_ok("Welcome to the internet")
+
+    # Validate file downloading
+    ->download_file_ok('link=Download my file');</code></pre>
+                    </section>
+                    <section>
+                        <h2>Your own Selenium</h2>
+                        <pre class="fragment"><code class="perl">package Test::Selenium;
+use Moose;
+extends 'Test::WWW::Selenium::More';
+with 'MooseX::Getopt';
+with 'MooseX::SimpleConfig';
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+1;</code></pre>
+                        <div class="fragment">MooseX::Getopt - Get params from command line</div>
+                        <div class="fragment">MooseX::SimpleConfig - Get params from file</div>
+                    </section>
+                    <section>
+                        <h2>My Test1</h2>
+                        <pre class="fragment"><code class="perl">use strict;
+use warnings;
+use Test::More tests => 3;
+use Test::Selenium;
+
+Test::Selenium->new_with_options
+
+    # Open index page
+    ->open_ok('/')
+
+    # Print text in the input
+    ->type_ok( 'q', 'Selenium' )
+
+    # Click on button
+    ->click_ok( 'btnG' );
+
+sleep(5);</code></pre>
+                    </section>
+                    <section>
+                        <h2>My Test2</h2>
+                        <div class="fragment">
+                            Advanced test module
+                        <pre><code class="perl">package Test::Selenium::Google;
+use Moose;
+extends 'Test::WWW::Selenium::More';
+with 'MooseX::Getopt';
+with 'MooseX::SimpleConfig';
+
+has search_text => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+);
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+1;</code></pre></div>
+                    </section>
+                    <section>
+                        <h3>t/test2.t</h3>
+                        <pre><code class="perl">use strict;
+use warnings;
+use Test::More;
+use Test::Selenium::Google;
+
+my $selenium    = Test::Selenium::Google->new_with_options;
+my $search_text = $selenium->search_text;
+
+plan tests => 3;
+
+    $selenium
+
+        # Open index page
+        ->open_ok('/')
+
+        # Print text in the input
+        ->type_ok( 'q', $search_text )
+
+        # Click on button
+        ->click_ok( 'btnG' );
+
+    sleep(5);
+
+done_testing;</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                    <h2>What we gona do with all that?</h2>
+                    <br>
+                    <br>
+                    <br>
+                    <h1 class="fragment">TAP::Runner!</h1>
+                    </section>
+                    <section>
+                        <h2>What we should to know?</h2>
+                        <div class="fragment">TAP::Harness - Basic tests runner</div>
+                        <div class="fragment">TAP::Formatter - Test results formatter</div>
+<pre class="fragment"><code class="perl">use TAP::Harness;
+my $harness = TAP::Harness->new( \%args );
+$harness->runtests(@tests);</code></pre>
+<pre class="fragment"><code class="perl">%args - TAP::Harness module args ( like 'formatter_class' )</code></pre>
+<pre class="fragment"><code class="perl">@tests - Test files to run</code></pre>
+                        <div class="fragment">
+                            <h3>Result formats:</h3>
+                            File - TAP::Formatter::File<br>
+                            HTML - TAP::Formatter::HTML<br>
+                            HTML - TAP::Formatter::JUnit ( jenkins )
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Run our tests</h2>
+<pre class="fragment"><code class="perl">my @tests = ( 't/test1.t', 't/test2.t' );
+
+my %args  = (
+    test_args => {
+        't/test1.t' => [
+            '--browser_url' => 'http://google.com',
+        ],
+        't/test2.t' => [
+            '--browser_url' => 'http://google.com',
+            '--search_text' => 'Selenium',
+        ],
+    },
+);
+
+my $harness = TAP::Harness->new( \%args );
+$harness->runtests( @tests );</code></pre>
+                    </section>
+                    <section>
+                    <h2>Example of TAP::Formatter::HTML</h2>
+<div id="summary" class="passed">
+<a href="#" title="Test Summary (100.0% ok)
+passed 6/6 tests in 2 files
+total time: 28.19s
+28 wallclock secs ( 0.03 usr  0.00 sys +  0.90 cusr  0.03 csys =  0.96 CPU)">PASSED</a>
+</div>
+
+<div id="menu">
+          <ul>
+<li>
+<span id="show-all"><a href="#" title="show all tests">show all</a></span>
+    <span id="show-failed"><a href="#" title="show failed tests only">show failed</a></span>
+</li>
+          </ul>
+</div>
+
+<div id="detail">
+<table class="detail">
+<thead>
+<tr>
+<th class="file">Test file</th>
+<th class="results">Test results</th>
+<th class="time">Time</th>
+<th class="percent">%</th>
+</tr>
+</thead>
+<tfoot>
+<tr>
+<td class="file">2 files</td>
+<td class="results">
+6 tests,
+6 ok,
+0 failed,
+0 todo,
+0 skipped,
+0 parse errors<br/>
+exit status: 0,
+wait status: 0<br/>
+elapsed time: 28 wallclock secs ( 0.03 usr  0.00 sys +  0.90 cusr  0.03 csys =  0.96 CPU)</td>
+<td class="time">28.19s</td>
+<td class="percent ">100.0%</td>
+</tr>
+</tfoot>
+<tbody>
+<tr class="test-run passed" id="t-test1-t">
+<td class="file c">
+<a class="file" href="#" title="Test ok.
+  3 planned, 3 run
+  3 ok, 0 failed
+  0 todo, 0 skipped
+exit status: 0
+wait status: 0">t/test1.t</a>
+</td>
+<td class="results">
+<table class="TS">
+<tr>
+
+<td class="k p"><a class="TS" href="#t0"> </a></td>
+<td class="k p"><a class="TS" href="#t1"> </a></td>
+<td class="k p"><a class="TS" href="#t2"> </a></td>
+</tr>
+</table>
+<div class="test-detail">
+<ul class="test-out">
+<li class="pln">1..3&nbsp;</li>
+<li id="t0" class="tst k">ok 1 - open, /&nbsp;</li>
+<li id="t1" class="tst k">ok 2 - type, q, Selenium&nbsp;</li>
+<li id="t2" class="tst k">ok 3 - click, btnG&nbsp;</li>
+</ul>
+</div>
+</td>
+<td class="time">14.23s</td>
+<td class="percent c cb">100.0%</td>
+</tr>
+<tr class="test-run passed" id="t-test2-t">
+<td class="file c">
+<a class="file" href="#" title="Test ok.
+  3 planned, 3 run
+  3 ok, 0 failed
+  0 todo, 0 skipped
+exit status: 0
+wait status: 0">t/test2.t</a>
+</td>
+<td class="results">
+<table class="TS">
+<tr>
+
+<td class="k p"><a class="TS" href="#t3"> </a></td>
+<td class="k p"><a class="TS" href="#t4"> </a></td>
+<td class="k p"><a class="TS" href="#t5"> </a></td>
+</tr>
+</table>
+<div class="test-detail">
+<ul class="test-out">
+<li class="pln">1..3&nbsp;</li>
+<li id="t3" class="tst k">ok 1 - open, /&nbsp;</li>
+<li id="t4" class="tst k">ok 2 - type, q, Selenium&nbsp;</li>
+<li id="t5" class="tst k">ok 3 - click, btnG&nbsp;</li>
+</ul>
+</div>
+</td>
+<td class="time">13.96s</td>
+<td class="percent c cb">100.0%</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div id="footer">Generated by TAP::Formatter::HTML v0.09 @ 21:46:26 30-Oct-2012</div>
+                    </section>
+                    <section>
+                        <h3>Run first test in parallel ( 2 browsers )</h3>
+<pre class="fragment"><code class="perl">my $test1 = TAP::Runner::Test->new(
+    file           => 't/test1.t',
+    alias          => 'Testing google 1',
+    args           => [
+        qw( --browser_url http://google.com ),
+    ],
+    options        => [ # TAP::Runner::Option - coerced
+        {
+            name        => '--port',
+            values      => [ 4444, 5555 ],
+            multiple    => 1,
+            parallel    => 1,
+        }
+    ],
+);</code></pre>
+                    </section>
+                    <section>
+                        <h3>Run second test with diferent options</h3>
+<pre class="fragment"><code class="perl">my $test2 = TAP::Runner::Test->new(
+    file           => 't/test2.t',
+    alias          => 'Testing google 2',
+    args           => [
+        qw( --browser_url http://google.com ),
+    ],
+    options        => [ # TAP::Runner::Option - coerced
+        {
+            name        => '--search_text',
+            values      => [ 'Selenium', 'TAP::Runner' ],
+            multiple    => 1,
+            parallel    => 0,
+        }
+    ],
+);</code></pre>
+                    </section>
+                    <section>
+                    <h2>Give it run</h2>
+<pre class="fragment"><code class="perl">use TAP::Runner;
+
+my $runner = TAP::Runner->new(
+    harness_class     => 'TAP::Harness',         # Set by default
+    harness_formatter => 'TAP::Formatter::HTML', # Console is default
+    tests             => [
+        $test1, # TAP::Runner::Test
+        $test2, # TAP::Runner::Test
+    ],
+);
+
+$runner->run;</code></pre>
+                    </section>
+                </section>
+                <section>
+                <br><br><br>
+                <h1>FINISH</h1>
+                <h4>BY Pavel R3VoLuT1OneR Zhytomirsky / r3volut1oner.com</h4>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/highlight.js', async: true, callback: function() { window.hljs.initHighlightingOnLoad(); } },
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'lib/js/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'lib/js/data-markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+		</script>
+
+	</body>
+</html>
