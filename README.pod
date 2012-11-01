@@ -1,0 +1,21 @@
+=head1 Writing Automatic Tests Using Selenium
+
+How to use Selenium with Perl with slides and code examples.
+
+HTML Slides you can find at /reveal_js/index.html.
+
+=head1 See also
+
+Selenium official website: http://seleniumhq.org/
+
+=head2 Additional Perl documentation
+
+L<WWW::Selenium>
+L<Test::WWW::Selenium>
+L<Test::WWW::Selenium::More>
+L<TAP::Harness>
+L<TAP::Runner>
+
+=head1 AUTHOR
+
+Pavel R3VoLuT1OneR Zhytomirsky <r3volut1oner@gmail.com>
